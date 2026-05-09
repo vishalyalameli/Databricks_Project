@@ -1,0 +1,30 @@
+resources:
+  jobs:
+    Data_EarthQake_End_End_Job:
+      name: Data_EarthQake_End_End_Job
+      tasks:
+        - task_key: Ingestion_Bronze
+          notebook_task:
+            notebook_path: /Workspace/Databricks_Project/Databricks_Project/Databricks_Project_Bundle/src/notebooks/Ingestion_Bronze
+            base_parameters:
+              Catalog_name: data_engineering
+            source: WORKSPACE
+        - task_key: Bronze_Silver_EarthQuake_1
+          depends_on:
+            - task_key: Ingestion_Bronze
+          pipeline_task:
+            pipeline_id: 7dcc08f6-fbc4-4e87-ad36-70b6cef5540f
+            full_refresh: false
+        - task_key: EarthQuake_Dashbhoard
+          depends_on:
+            - task_key: Bronze_Silver_EarthQuake_1
+          dashboard_task:
+            subscription: {}
+            warehouse_id: 3a2f9b753b7840df
+            dashboard_id: 01f14b0c4cb619c28a32bd1f1751573b
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: data_engineering
+      performance_target: PERFORMANCE_OPTIMIZED
